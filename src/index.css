@@ -1,0 +1,522 @@
+:root {
+  --bg: #fff;
+  --text: #1a1a1a;
+  --muted: #6f6f6f;
+  --font: 'Jost', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  /* На весь экран в Telegram верх занимают шапка системы и кнопки Telegram; переменные --tg-* задаёт его скрипт */
+  --safe-top: max(env(safe-area-inset-top), calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px)));
+  --safe-bottom: max(env(safe-area-inset-bottom), var(--tg-safe-area-inset-bottom, 0px));
+
+  font: 16px/1.5 var(--font);
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+}
+
+a {
+  color: inherit;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Список альбомов */
+
+.home-header {
+  padding: calc(64px + var(--safe-top)) 16px 32px;
+  text-align: center;
+}
+
+.home-header h1 {
+  margin: 0;
+  font-weight: 400;
+  font-size: clamp(28px, 5vw, 48px);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.home-header p {
+  margin: 8px 0 12px;
+  color: var(--muted);
+}
+
+.home-header p a {
+  text-decoration: none;
+}
+
+.home-header p a:hover {
+  color: var(--text);
+}
+
+.album-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 32px 16px;
+  max-width: 1232px;
+  margin: 0 auto;
+  padding: 16px 16px calc(64px + var(--safe-bottom));
+}
+
+.album-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-decoration: none;
+}
+
+.album-card img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  margin-bottom: 8px;
+  transition: opacity 0.2s;
+}
+
+.album-card:hover img {
+  opacity: 0.85;
+}
+
+.album-card__date,
+.album-card__count {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.album-card__title {
+  font-size: 18px;
+}
+
+.empty {
+  color: var(--muted);
+}
+
+/* Вкладки альбома: неактивные серые, активная чёрная с линией по нижнему краю панели */
+
+.toolbar--tabs {
+  display: flex;
+  max-width: 1232px;
+  margin: 0 auto;
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.tabs {
+  display: flex;
+  gap: 32px;
+  min-width: 0;
+  margin-right: auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs__link {
+  position: relative;
+  flex-shrink: 0;
+  padding: 24px 0;
+  color: #797979;
+  font-size: 17px;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.tabs__link:hover,
+.tabs__link--active {
+  color: #000;
+}
+
+.tabs__link--active::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 1px;
+  background: #000;
+}
+
+@media (max-width: 600px) {
+  .tabs {
+    gap: 20px;
+  }
+
+  .tabs__link {
+    padding: 18px 0;
+    font-size: 15px;
+  }
+}
+
+.toolbar__btn {
+  padding: 8px 20px;
+  border: 1px solid var(--text);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.toolbar__btn--primary {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.toolbar__btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .toolbar__btn {
+    padding: 8px 12px;
+  }
+}
+
+.gallery {
+  max-width: 1232px;
+  margin: 0 auto;
+  padding: 0 16px calc(32px + var(--safe-bottom));
+}
+
+.gallery .react-photo-album--photo {
+  overflow: hidden;
+}
+
+/* Пазл */
+
+.gallery--puzzle img {
+  cursor: pointer;
+}
+
+/* В разделе пазла текст не выделяется: на телефоне палец при перетаскивании задевает подписи и кнопки */
+.puzzle-section,
+.puzzle-section * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Шапка раздела пазла: тонкие стыки пазла под наклоном на белом (PuzzleSeams.tsx), к низу шапки узор сходит на нет */
+.puzzle-section .home-header {
+  position: relative;
+  isolation: isolate;
+}
+
+.puzzle-seams {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Затухание к низу шапки — поверх узора, под текстом */
+.puzzle-section .home-header::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(transparent 40%, var(--bg));
+  pointer-events: none;
+}
+
+.puzzle-empty {
+  padding: 48px 0;
+  text-align: center;
+}
+
+.puzzle-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--text);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+/* Под игрой страница не прокручивается, на iOS не тянется */
+.puzzle-open,
+.puzzle-open body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+.puzzle {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  /* Стабильная высота: лента частей не смещается, пока окно Telegram меняет размер */
+  height: var(--tg-viewport-stable-height, 100%);
+  background: var(--bg);
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.puzzle__bar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: max(8px, var(--safe-top)) 16px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.puzzle__back {
+  padding: 8px 0;
+  margin-right: auto;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font-size: 15px;
+}
+
+.puzzle__back--dialog {
+  margin: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.puzzle__count {
+  color: var(--muted);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.puzzle__icon {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--text);
+}
+
+.puzzle__icon:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.puzzle__play {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.puzzle__frame {
+  position: absolute;
+  background: #f2f2f2;
+  outline: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.puzzle__hint {
+  display: block;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.puzzle__hint--on {
+  opacity: 0.3;
+}
+
+/* Собранный пазл: фото целиком поверх частей, без линий нарезки */
+.puzzle__hint--solved {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  transition-duration: 1s;
+}
+
+.puzzle__piece {
+  position: absolute;
+  display: block;
+}
+
+.puzzle__piece--placed {
+  pointer-events: none;
+}
+
+.puzzle__piece--loose {
+  cursor: grab;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.puzzle__status {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.puzzle__status p {
+  margin: 0;
+}
+
+.puzzle__dialog-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px 24px;
+}
+
+.puzzle__tray {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  height: calc(104px + var(--safe-bottom));
+  padding: 0 16px var(--safe-bottom);
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  background: #fafafa;
+  /* Пальцем: вбок — прокрутка ленты, вверх — часть берётся из ленты; прокрутку ведёт Puzzle.tsx */
+  touch-action: none;
+}
+
+.puzzle__slot {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 80px;
+  height: 80px;
+  cursor: grab;
+}
+
+.puzzle__slot canvas {
+  display: block;
+}
+
+.puzzle__float {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.35));
+}
+
+.puzzle__float canvas {
+  display: block;
+}
+
+.puzzle__done {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 12px 16px;
+  padding: 24px 16px max(24px, var(--safe-bottom));
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.puzzle__done span {
+  width: 100%;
+  text-align: center;
+}
+
+.puzzle__results {
+  width: 100%;
+  margin: -4px 0 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.puzzle__results::before {
+  content: 'Earlier';
+  display: block;
+}
+
+/* Сброс прогресса альбома — в строке под названием, как ссылка */
+.puzzle-reset {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+}
+
+.puzzle-reset:hover,
+.puzzle-reset--confirm {
+  color: var(--text);
+}
+
+.puzzle-reset--confirm {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.puzzle__dialog {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.94);
+  text-align: center;
+}
+
+.puzzle__dialog img {
+  width: auto;
+  max-width: min(100%, 360px);
+  height: auto;
+  max-height: 40svh;
+}
+
+.puzzle__dialog p {
+  margin: 0;
+  font-size: 18px;
+}
+
+.puzzle__sizes {
+  display: flex;
+  gap: 12px;
+}
+
+.puzzle__sizes .toolbar__btn {
+  min-width: 56px;
+}
+
+.confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
